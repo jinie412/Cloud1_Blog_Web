@@ -14,6 +14,7 @@ async function uploadFileToS3(fileBuffer, fileName, mimetype) {
     Key: key,
     Body: fileBuffer,
     ContentType: mimetype,
+    ACL: "public-read",
   };
 
   try {
