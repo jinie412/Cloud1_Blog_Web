@@ -1,0 +1,26 @@
+@import "tailwindcss/base";
+
+@import "tailwindcss/components";
+
+@import "tailwindcss/utilities";
+
+[type="search"] {
+  -webkit-appearance: textfield; /* For WebKit-based browsers */
+  appearance: textfield; /* Standard property for broader compatibility */
+  outline-offset: -2px; /* Adjusts the position of the outline */
+}
+button,
+input:where([type="button"]),
+input:where([type="reset"]),
+input:where([type="submit"]) {
+  -webkit-appearance: button; /* For WebKit-based browsers */
+  appearance: button; /* Standard property for broader compatibility */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+
+object {
+  display: block;
+  /* 1 */
+  /* vertical-align: middle; */ /* 2 - This line is not needed */
+}

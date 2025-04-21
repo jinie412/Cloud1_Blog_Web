@@ -1,0 +1,93 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.nav-link {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: black;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.nav-link:hover {
+    background: #f3f3f3;
+}
+
+.nav-link.active {
+    background: #e5e7eb; /* màu xám nhạt */
+    font-weight: bold;
+    color: #1f2937; /* màu đen đậm hơn */
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.avatar {
+    flex: 1;
+    text-align: center;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    font-weight: bold;
+}
+
+/* Ô chứa ảnh bệnh nhân */
+.user-photo {
+    position: relative;
+    margin-bottom: 20px;
+    width: 180px;
+    height: 180px;
+}
+
+/* Ảnh avatar */
+#preview-photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    cursor: pointer; /* Trỏ chuột giống nút */
+    transition: 0.3s; /* Hiệu ứng khi hover */
+    background-color: #f0f0f0; /* Màu nền placeholder */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+}
+
+/* Hiệu ứng khi hover vào ảnh */
+#preview-photo:hover {
+    opacity: 0.8;
+    transform: scale(1.05); /* Phóng to nhẹ */
+}
+
+/* Ẩn input file */
+#upload-photo {
+    display: none;
+}
+
+.btn-update {
+    background: black;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+button:hover {
+    background-color: #485665;
+}

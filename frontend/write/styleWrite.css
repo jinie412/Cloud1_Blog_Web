@@ -1,0 +1,9 @@
+/* Custom styling for better appearance */
+textarea {
+    resize: none;
+}
+
+
+button:hover {
+    background-color: #485665;
+}

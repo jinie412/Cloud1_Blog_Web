@@ -1,0 +1,149 @@
+/* Global Styles */
+body {
+    display: flex;
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+    margin: 0;
+}
+
+.nav-link {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: black;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.nav-link:hover {
+    background: #f3f3f3;
+}
+
+.nav-link.active {
+    background: #e5e7eb; /* màu xám nhạt */
+    font-weight: bold;
+    color: #1f2937; /* màu đen đậm hơn */
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: white;
+    padding: 20px;
+    box-shadow: 2px 0px 10px rgba(0,0,0,0.1);
+    height: 100vh;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 8px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+.menu {
+    margin-top: 20px;
+}
+
+.menu-item {
+    display: block;
+    text-decoration: none;
+    color: black;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.menu-item:hover, .menu-item.active {
+    background: #eee;
+}
+
+.menu-divider {
+    font-size: 14px;
+    color: gray;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+/* Content */
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+
+
+/* Tabs */
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.tab {
+    padding: 10px 15px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.tab.active {
+    font-weight: bold;
+    border-bottom: 2px solid black;
+}
+
+/* Blog List */
+.blog-list {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+}
+
+.blog-card {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.blog-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+    margin-right: 15px;
+}
+
+.blog-info {
+    flex: 1;
+}
+
+.blog-actions {
+    margin-top: 5px;
+}
+
+.blog-actions a {
+    margin-right: 10px;
+    text-decoration: none;
+}
+
+.edit {
+    color: blue;
+}
+
+.delete {
+    color: red;
+}
+
+/* Blog Stats */
+.blog-stats {
+    text-align: right;
+    font-size: 14px;
+    color: gray;
+}
