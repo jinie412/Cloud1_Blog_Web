@@ -13,10 +13,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/users/${userId}`);
       const user = await res.json();
-      if (user.avatar_url && user.avatar_url.startsWith("/")) {
-        avatarImg.src = `${API_BASE_URL}${user.avatar_url}`; // Nếu là đường dẫn tương đối, thêm tiền tố backend
+      if (user.avatar_url && user.avatar_url.startsWith("http")) {
+        avatarImg.src = user.avatar_url;
+      } else if (user.avatar_url && user.avatar_url.startsWith("/")) {
+        avatarImg.src = `${API_BASE_URL}${user.avatar_url}`;
       } else {
-        avatarImg.src = "../img/logo.png"; // Sử dụng ảnh mặc định
+        avatarImg.src = "../img/logo.png";
       }
       avatarImg.classList.remove("hidden");
       authButtons.classList.add("hidden");
@@ -81,10 +83,12 @@ document.addEventListener("DOMContentLoaded", async () => {
           <div class="flex items-center gap-4 mb-3">
               <img src="${
                 post.avatar_url
-                  ? post.avatar_url.startsWith("/")
-                    ? `${API_BASE_URL}${post.avatar_url}`
-                    : post.avatar_url
-                  : "../img/default.jpg"
+                  ? post.avatar_url.startsWith("http")
+                    ? post.avatar_url
+                    : post.avatar_url.startsWith("/")
+                      ? `${API_BASE_URL}${post.avatar_url}`
+                      : "../img/logo.png"
+                  : "../img/logo.png"
               }" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-gray-300" />
               <div class="text-sm">
                   <p class="font-semibold">${post.username || "Tác giả"}</p>

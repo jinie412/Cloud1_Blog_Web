@@ -16,12 +16,14 @@ document.addEventListener("DOMContentLoaded", async function () {
       const result = await response.json();
 
       if (response.ok) {
-        authButtons.classList.add("hidden");
-        if (result.avatar_url && result.avatar_url.startsWith("/")) {
-          avatarImg.src = `${API_BASE_URL}${result.avatar_url}`; // Nếu là đường dẫn tương đối, thêm tiền tố backend
+        authButtons.classList.add("hidden");      
+        if (result.avatar_url && result.avatar_url.startsWith("http")) {
+          avatarImg.src = result.avatar_url;
+        } else if (result.avatar_url && result.avatar_url.startsWith("/")) {
+          avatarImg.src = `${API_BASE_URL}${result.avatar_url}`;
         } else {
-          avatarImg.src = "../img/logo.png"; // Sử dụng ảnh mặc định nếu không có URL hoặc định dạng không xác định
-        }
+          avatarImg.src = "../img/logo.png";
+        }      
         avatarImg.classList.remove("hidden");
       } else {
         localStorage.removeItem("userId");
@@ -48,16 +50,19 @@ document.addEventListener("DOMContentLoaded", async function () {
               <div class="flex-grow">
                 <div class="flex items-center gap-3 mb-2">
                   <img src="${
-                    post.avatar_url && post.avatar_url.startsWith("/")
-                      ? `${API_BASE_URL}${post.avatar_url}`
+                    post.avatar_url
+                      ? post.avatar_url.startsWith("http")
+                        ? post.avatar_url
+                        : `${API_BASE_URL}${post.avatar_url}`
                       : "../img/logo.png"
-                  }" alt="Avatar" class="w-5 h-5 rounded-full object-cover border" />
+                  }" 
+                  alt="Avatar" class="w-5 h-5 rounded-full object-cover border" />
                   <span class="text-sm text-gray-600">@${
                     post.username || "Ẩn danh"
                   }</span>
                   <p class="text-sm text-gray-600">
                    ${createdDate}
-                  ${isUpdated ? `<br>Cập nhật: ${updatedDate}` : ""}
+                  ${isUpdated ? `<br>Updated: ${updatedDate}` : ""}
                 </p>
                 </div>
                 <h1 class="text-2xl font-semibold">${post.title}</h1>
