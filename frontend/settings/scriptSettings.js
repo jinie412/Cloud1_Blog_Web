@@ -17,11 +17,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       if (response.ok) {
         authButtons.classList.add("hidden");
-        if (result.avatar_url && result.avatar_url.startsWith("/")) {
-          avatarImg.src = `${API_BASE_URL}${result.avatar_url}`; // Nếu là đường dẫn tương đối, thêm tiền tố backend
+
+        if (result.avatar_url && result.avatar_url.startsWith("http")) {
+          avatarImg.src = result.avatar_url;
+        } else if (result.avatar_url && result.avatar_url.startsWith("/")) {
+          avatarImg.src = `${API_BASE_URL}${result.avatar_url}`;
         } else {
-          avatarImg.src = "../img/logo.png"; // Sử dụng ảnh mặc định nếu không có URL hoặc định dạng không xác định
+          avatarImg.src = "../img/logo.png";
         }
+
         avatarImg.classList.remove("hidden");
       } else {
         localStorage.removeItem("userId");

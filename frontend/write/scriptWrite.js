@@ -21,6 +21,33 @@ document.addEventListener("DOMContentLoaded", () => {
         descriptionInputPreview.value.length + "/200 characters";
     }
   }
+  // Mới thêm
+  async function uploadBase64ImageToS3(base64Data, filename = "banner.jpg") {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/s3/upload`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          base64Image: base64Data,
+          filename,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.url) {
+        return result.url; // Trả về URL đã upload lên S3
+      } else {
+        console.error("Upload ảnh S3 thất bại:", result);
+        return null;
+      }
+    } catch (error) {
+      console.error("Lỗi khi upload ảnh S3:", error);
+      return null;
+    }
+  }
 
   // Lưu trạng thái ban đầu của trang Write khi tải
   const initialWriteState = {
@@ -344,6 +371,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const userId = localStorage.getItem("userId");
       const currentTopic = document.getElementById("blogTopic").value.trim();
+      if (!currentTopic) {
+        alert("Topic không được để trống!");
+        return;
+      }
       const topicId = await getTopicIdFromBackend(
         currentTopic ? [currentTopic] : []
       );
@@ -377,10 +408,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const rawBase64 = sessionStorage.getItem("rawBannerFile");
       const fallbackBase64 = localStorage.getItem("currentBannerPreview");
       const bannerBase64 = rawBase64 || fallbackBase64;
-
+      // mới cmt
+      // if (bannerBase64 && bannerBase64.startsWith("data:image")) {
+      //   const fileFromBase64 = dataURLtoFile(bannerBase64, "banner.jpg");
+      //   formData.append("banner", fileFromBase64);
+      // }
+      let bannerUrl = null;
       if (bannerBase64 && bannerBase64.startsWith("data:image")) {
-        const fileFromBase64 = dataURLtoFile(bannerBase64, "banner.jpg");
-        formData.append("banner", fileFromBase64);
+        bannerUrl = await uploadBase64ImageToS3(bannerBase64);
+        if (bannerUrl) {
+          formData.append("image_url", bannerUrl); // gửi URL thay vì file
+        }
       }
 
       const method = editPostId ? "PUT" : "POST";
@@ -413,7 +451,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const result = await response.json();
-
+        console.error("Kết quả trả về khi lấy topic ID:", result);
         if (response.ok) {
           alert(editPostId ? "The blog has been updated!" : "Published!");
         } else {
