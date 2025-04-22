@@ -11,7 +11,7 @@ const uploadBanner = multer({ storage: multer.memoryStorage() });
 
 // ========== TẠO BÀI VIẾT MỚI ==========
 router.post("/posts", uploadBanner.single("banner"), async (req, res) => {
-  const { title, content, des, user_id, topic_id } = req.body;
+  const { title, content, des, user_id, topic_id, image_url } = req.body;
   let imageUrl = null;
 
   if (!title || !content || !user_id) {
@@ -28,6 +28,9 @@ router.post("/posts", uploadBanner.single("banner"), async (req, res) => {
         req.file.originalname,
         req.file.mimetype
       );
+    } else if (image_url) {
+      console.log("Đã nhận image_url từ frontend:", image_url);
+      imageUrl = image_url; // Dùng ảnh từ frontend đã upload S3
     } else {
       console.log("Không có ảnh được gửi lên.");
       imageUrl = null;
@@ -55,7 +58,7 @@ router.post("/posts", uploadBanner.single("banner"), async (req, res) => {
 // ========== CẬP NHẬT BÀI VIẾT ==========
 router.put("/posts/:id", uploadBanner.single("banner"), async (req, res) => {
   const { id } = req.params;
-  const { title, content, des, topic_id } = req.body;
+  const { title, content, des, topic_id, image_url } = req.body;
   let imageUrl = null;
 
   try {
@@ -71,8 +74,10 @@ router.put("/posts/:id", uploadBanner.single("banner"), async (req, res) => {
         req.file.originalname,
         req.file.mimetype
       );
+    } else if (image_url) {
+      imageUrl = image_url;
     } else {
-      imageUrl = oldImageUrl; // Giữ lại ảnh cũ nếu không có ảnh mới
+      imageUrl = oldImageUrl;
     }
 
     const [result] = await pool.execute(

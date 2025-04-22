@@ -4,22 +4,8 @@ const pool = require("../db");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-
-// Cấu hình multer để lưu trữ tệp (bạn có thể tùy chỉnh thư mục và tên tệp)
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../uploads/avatars")); // Lưu vào thư mục uploads/avatars
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
-    );
-  },
-});
-
-const upload = multer({ storage: storage });
+const { uploadFileToS3, deleteFileFromS3 } = require("../services/s3");
+const upload = multer({ storage: multer.memoryStorage() }); // dùng memory để upload lên S3
 
 // Route lấy thông tin user
 router.get("/users/:id", async (req, res) => {
@@ -46,7 +32,8 @@ router.get("/users/:id", async (req, res) => {
 router.put("/users/:id", upload.single("avatar"), async (req, res) => {
   const { id } = req.params;
   const { bio } = req.body;
-  const avatarUrl = req.file ? `/uploads/avatars/${req.file.filename}` : null;
+
+  let newAvatarUrl = null;
 
   try {
     // 1. Truy vấn avatar_url cũ
@@ -61,25 +48,34 @@ router.put("/users/:id", upload.single("avatar"), async (req, res) => {
 
     const oldAvatarUrl = rows[0].avatar_url;
 
-    // 2. Nếu có avatar mới và có avatar cũ → xoá file cũ
-    if (avatarUrl && oldAvatarUrl) {
-      const oldAvatarPath = path.join(__dirname, "..", oldAvatarUrl);
-      fs.unlink(oldAvatarPath, (err) => {
-        if (err) {
-          console.warn("Không thể xoá avatar cũ:", err.message);
-        } else {
-          console.log("Đã xoá avatar cũ:", oldAvatarPath);
+    // 2. Nếu có ảnh mới → upload lên S3
+    if (req.file) {
+      newAvatarUrl = await uploadFileToS3(
+        req.file.buffer,
+        `avatars/${Date.now()}_${req.file.originalname}`,
+        req.file.mimetype
+      );
+
+      console.log("Đã upload avatar mới lên S3:", newAvatarUrl);
+
+      // 3. Nếu có avatar cũ từ S3 thì xoá
+      if (oldAvatarUrl && oldAvatarUrl.startsWith("https://")) {
+        try {
+          await deleteFileFromS3(oldAvatarUrl);
+          console.log("Đã xoá avatar cũ trên S3:", oldAvatarUrl);
+        } catch (err) {
+          console.warn("Không thể xoá avatar cũ trên S3:", err.message);
         }
-      });
+      }
     }
 
-    // 3. Cập nhật thông tin
+    // 4. Cập nhật thông tin trong DB
     let query = "UPDATE users SET bio = ?";
     let params = [bio];
 
-    if (avatarUrl) {
+    if (newAvatarUrl) {
       query += ", avatar_url = ?";
-      params.push(avatarUrl);
+      params.push(newAvatarUrl);
     }
 
     query += " WHERE id = ?";
@@ -90,7 +86,7 @@ router.put("/users/:id", upload.single("avatar"), async (req, res) => {
     if (result.affectedRows > 0) {
       res.json({
         message: "Thông tin người dùng đã được cập nhật thành công!",
-        avatar_url: avatarUrl || oldAvatarUrl,
+        avatar_url: newAvatarUrl || oldAvatarUrl,
       });
     } else {
       res.status(404).json({ error: "Không tìm thấy người dùng để cập nhật." });
